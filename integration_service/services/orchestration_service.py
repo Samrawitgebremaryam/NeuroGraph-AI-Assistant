@@ -8,6 +8,7 @@ import json
 import asyncio  
 from typing import Dict, Any, Tuple  
 from .miner_service import MinerService  
+from .annotation_service import AnnotationService  
 from ..config.settings import settings  
   
 class OrchestrationService:  
@@ -15,6 +16,7 @@ class OrchestrationService:
         
     def __init__(self):  
         self.miner_service = MinerService()  
+        self.annotation_service = AnnotationService()  
         self.atomspace_url = settings.atomspace_url  
         self.timeout = settings.atomspace_timeout  
         
@@ -77,7 +79,7 @@ class OrchestrationService:
                 return {"status": "error", "error": "Neo4j data not ready"}  
                 
             # Call annotation service  
-            annotation_result = await self._call_annotation_service(  
+            annotation_result = await self.annotation_service.annotate_motif(  
                 neo4j_job_id, selected_motif  
             )  
                 
@@ -210,27 +212,4 @@ class OrchestrationService:
                     return job_data.get('status') == 'completed'  
                 return False  
         except:  
-            return False  
-        
-    async def _call_annotation_service(  
-        self,   
-        neo4j_job_id: str,   
-        motif: Dict[str, Any]  
-    ) -> Dict[str, Any]:  
-        """Call annotation service with motif data."""  
-        async with httpx.AsyncClient(timeout=settings.annotation_timeout) as client:  
-            payload = {  
-                "folder_id": neo4j_job_id,  
-                "type": "cypher",  
-                "motif": motif  
-            }  
-                
-            response = await client.post(  
-                f"{settings.annotation_url}/annotate",  
-                json=payload  
-            )  
-                
-            if response.status_code != 200:  
-                raise RuntimeError(f"Annotation failed: {response.text}")  
-                
-            return response.json()
+            return False
