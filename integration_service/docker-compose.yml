@@ -8,15 +8,21 @@ services:
     environment:  
       - ATOMSPACE_API_URL=http://atomspace-api:8000  
       - NEURAL_MINER_URL=http://neural-miner:5000  
+      - ANNOTATION_SERVICE_URL=http://annotation-service:6000  
       - SHARED_VOLUME_PATH=/shared/output  
+      - ATOMSPACE_TIMEOUT=1800  
+      - MINER_TIMEOUT=600  
+      - ANNOTATION_TIMEOUT=300  
     volumes:  
       - shared_output:/shared/output  
       - ./cache:/app/cache  
     depends_on:  
       - atomspace-api  
       - neural-miner  
+      - annotation-service  
     networks:  
       - integration-network  
+    restart: always  
   
   atomspace-api:  
     image: abdum1964/atomspace-api:latest  
@@ -24,6 +30,7 @@ services:
       - shared_output:/shared/output  
     networks:  
       - integration-network  
+    restart: always  
   
   neural-miner:  
     build: ./submodules/neural-subgraph-miner  
@@ -31,9 +38,24 @@ services:
       - shared_output:/shared/output  
     networks:  
       - integration-network  
+    restart: always  
+  
+  annotation-service:  
+    image: abdum1964/annotation-service:latest  
+    environment:  
+      - NEO4J_HOST=neo4j  
+      - NEO4J_PORT=7687  
+      - NEO4J_USERNAME=neo4j  
+      - NEO4J_PASSWORD=atomspace123  
+    volumes:  
+      - shared_output:/shared/output  
+    networks:  
+      - integration-network  
+    restart: always  
   
 volumes:  
   shared_output:  
+    driver: local  
   
 networks:  
   integration-network:  

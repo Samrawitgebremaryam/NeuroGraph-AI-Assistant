@@ -8,7 +8,7 @@ from ..config.settings import settings
 router = APIRouter()  
 orchestration_service = OrchestrationService()  
   
-@router.post("/api/execute")  
+@router.post("/execute")  
 async def execute_pipeline(  
     file: UploadFile = File(...),  
     config: str = Form(...),  
@@ -16,19 +16,17 @@ async def execute_pipeline(
     tenant_id: str = Form("default"),  
     session_id: str = Form(None)  
 ):  
-    """Execute complete pipeline: CSV → NetworkX → Miner."""  
+    """Execute graph generation and mining pipeline."""  
     if not file.filename.endswith('.csv'):  
         raise HTTPException(status_code=400, detail="Only CSV files are supported")  
-      
-    # Save uploaded file temporarily  
+        
     with tempfile.NamedTemporaryFile(mode='wb', suffix='.csv', delete=False) as tmp_file:  
         content = await file.read()  
         tmp_file.write(content)  
         tmp_file_path = tmp_file.name  
-      
+        
     try:  
-        # Execute complete mining pipeline with config/schema  
-        result = await orchestration_service.execute_mining_pipeline(  
+        result = await orchestration_service.process_graph_pipeline(  
             csv_file_path=tmp_file_path,  
             config=config,  
             schema_json=schema_json,  
@@ -37,5 +35,29 @@ async def execute_pipeline(
         )  
         return result  
     finally:  
-        # Cleanup temporary file  
-        os.unlink(tmp_file_path)
+        os.unlink(tmp_file_path)  
+  
+@router.post("/annotate")  
+async def annotate_motif(  
+    job_id: str = Form(...),  
+    neo4j_job_id: str = Form(...),  
+    selected_motif: dict = Form(...)  
+):  
+    """Stage 2: Annotate selected motif."""  
+    result = await orchestration_service.annotate_selected_motif(  
+        job_id=job_id,  
+        neo4j_job_id=neo4j_job_id,  
+        selected_motif=selected_motif  
+    )  
+    return result  
+  
+@router.get("/job/{job_id}")  
+async def get_job_status(job_id: str):  
+    """Get job status."""  
+    # This would typically check a job store  
+    return {"job_id": job_id, "status": "processing"}  
+  
+@router.get("/health")  
+async def health_check():  
+    """Health check endpoint."""  
+    return {"status": "healthy", "service": "integration-service"}
