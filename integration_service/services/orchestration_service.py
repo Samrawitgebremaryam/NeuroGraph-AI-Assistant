@@ -26,7 +26,7 @@ class OrchestrationService:
         tenant_id: str = "default",    
         session_id: str = None    
     ) -> Dict[str, Any]:  
-        """Stage 1: CSV → NetworkX → Parallel Neo4j + Mining → Return motifs."""  
+        """CSV → NetworkX → Parallel Neo4j + Mining → Return motifs."""  
         job_id = str(uuid.uuid4())  
             
         try:  
@@ -35,7 +35,7 @@ class OrchestrationService:
                 csv_file_path, job_id, config, schema_json, tenant_id, session_id  
             )  
                 
-            # Step 2: Parallel Neo4j generation and Neural mining  
+            #Parallel Neo4j generation and Neural mining  
             neo4j_task = self._generate_neo4j(  
                 csv_file_path, job_id, config, schema_json, tenant_id, session_id  
             )  
@@ -70,7 +70,7 @@ class OrchestrationService:
         neo4j_job_id: str,  
         selected_motif: Dict[str, Any]  
     ) -> Dict[str, Any]:  
-        """Stage 2: Annotate selected motif using Neo4j data."""  
+        """Annotate selected motif using Neo4j data."""  
         try:  
             # Check if Neo4j is ready  
             if not await self._check_neo4j_ready(neo4j_job_id):  

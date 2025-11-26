@@ -43,7 +43,7 @@ async def annotate_motif(
     neo4j_job_id: str = Form(...),  
     selected_motif: dict = Form(...)  
 ):  
-    """Stage 2: Annotate selected motif."""  
+    """Annotate selected motif."""  
     result = await orchestration_service.annotate_selected_motif(  
         job_id=job_id,  
         neo4j_job_id=neo4j_job_id,  
