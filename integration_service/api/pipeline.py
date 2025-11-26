@@ -2,8 +2,8 @@
 import os  
 import tempfile  
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException  
-from ..services.orchestration_service import OrchestrationService  
-from ..config.settings import settings  
+from services.orchestration_service import OrchestrationService  
+from config.settings import settings  
   
 router = APIRouter()  
 orchestration_service = OrchestrationService()  
@@ -54,7 +54,6 @@ async def annotate_motif(
 @router.get("/job/{job_id}")  
 async def get_job_status(job_id: str):  
     """Get job status."""  
-    # This would typically check a job store  
     return {"job_id": job_id, "status": "processing"}  
   
 @router.get("/health")  

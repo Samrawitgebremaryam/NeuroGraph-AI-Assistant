@@ -9,13 +9,13 @@ services:
       - ATOMSPACE_API_URL=http://atomspace-api:8000  
       - NEURAL_MINER_URL=http://neural-miner:5000  
       - ANNOTATION_SERVICE_URL=http://annotation-service:6000  
-      - SHARED_VOLUME_PATH=/shared/output  
       - ATOMSPACE_TIMEOUT=1800  
       - MINER_TIMEOUT=600  
       - ANNOTATION_TIMEOUT=300  
     volumes:  
       - shared_output:/shared/output  
-      - ./cache:/app/cache  
+      - csv_cache:/tmp/csv_cache  
+      - job_states:/tmp/job_states  
     depends_on:  
       - atomspace-api  
       - neural-miner  
@@ -55,6 +55,10 @@ services:
   
 volumes:  
   shared_output:  
+    driver: local  
+  csv_cache:  
+    driver: local  
+  job_states:  
     driver: local  
   
 networks:  

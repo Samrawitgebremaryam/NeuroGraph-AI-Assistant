@@ -9,7 +9,7 @@ class Settings:
       
     def __init__(self):  
         # Service URLs  
-        self.atomspace_url = os.getenv('ATOMSPACE_API_URL', 'http://atomspace-api-dev:8000')  
+        self.atomspace_url = os.getenv('ATOMSPACE_API_URL', 'http://atomspace-api:8000')  
         self.miner_url = os.getenv('NEURAL_MINER_URL', 'http://neural-miner:5000')  
         self.annotation_url = os.getenv('ANNOTATION_SERVICE_URL', 'http://annotation-service:6000')  
           
