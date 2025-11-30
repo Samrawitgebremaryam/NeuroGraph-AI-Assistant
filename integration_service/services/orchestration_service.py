@@ -10,6 +10,44 @@ from ..config.settings import settings
   
 class OrchestrationService:  
     """Main pipeline orchestrator."""  
+        
+    def __init__(self):  
+        self.miner_service = MinerService()  
+        self.atomspace_url = settings.atomspace_url  
+        self.timeout = settings.atomspace_timeout  
+          
+    async def execute_mining_pipeline(  
+        self,  
+        csv_file_paths: List[str],  
+        config: str,  
+        schema_json: str,  
+        writer_type: str = "networkx",  
+        tenant_id: str = "default",  
+        session_id: str = None  
+    ) -> Dict[str, Any]:  
+        """Execute complete pipeline: CSV → NetworkX → Miner."""  
+        job_id = str(uuid.uuid4())  
+              
+        try:  
+            # Generate NetworkX using AtomSpace Builder  
+            networkx_result = await self._generate_networkx(  
+                csv_file_paths, job_id, config, schema_json, writer_type, tenant_id, session_id  
+            )  
+                  
+            # Step 2: Mine motifs using Neural Miner  
+            motifs_result = await self._mine_motifs(networkx_result['networkx_file'])  
+                  
+            return {  
+                "job_id": job_id,  
+                "status": "success",  
+                "motifs": motifs_result['motifs'],  
+                "statistics": motifs_result['statistics']  
+            }  
+                  
+        except Exception as e:  
+            return {"job_id": job_id, "status": "error", "error": str(e)}  
+          
+    async def process_selected_motif(  
         self,  
         job_id: str,  
         motif_index: int,  
