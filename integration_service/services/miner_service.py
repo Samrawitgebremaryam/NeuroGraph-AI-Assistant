@@ -51,7 +51,10 @@ class MinerService:
                 data['graph_type'] = mining_config.get('graph_type', 'directed')
                 data['search_strategy'] = mining_config.get('search_strategy', 'greedy')
                 data['sample_method'] = mining_config.get('sample_method', 'tree')
+                data['visualize_instances'] = mining_config.get('visualize_instances', False)
                 
+                print(f"DEBUG MINER_SERVICE: Sending data to miner: {data}", flush=True)
+
                 # Send to miner using HTTP client  
                 async with httpx.AsyncClient(timeout=self.timeout) as client:  
                     files = {'graph_file': ('graph.gpickle', networkx_data, 'application/octet-stream')}

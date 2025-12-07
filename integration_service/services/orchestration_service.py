@@ -94,11 +94,16 @@ class OrchestrationService:
             if not os.path.exists(networkx_file):
                 raise FileNotFoundError(f"NetworkX file not found for job_id: {job_id}")
             
-            # Mine motifs with config
+            graph_output_format = mining_config.get('graph_output_format', 'representative')
+            visualize_instances = (graph_output_format == 'instance')
+            
+            miner_config = mining_config.copy()
+            miner_config['visualize_instances'] = visualize_instances
+            
             await self.miner_service.mine_motifs(
                 networkx_file,
                 job_id=job_id,
-                mining_config=mining_config
+                mining_config=miner_config
             )
             
             local_paths = self._copy_to_local_output(job_id)
@@ -119,9 +124,12 @@ class OrchestrationService:
         metadata_path = f"/shared/output/{job_id}/networkx_metadata.json"
         
         if not os.path.exists(metadata_path):
+            metadata_path = f"/shared/output/{job_id}/job_metadata.json"
+            
+        if not os.path.exists(metadata_path):
             raise FileNotFoundError(
-                f"NetworkX metadata not found for job_id: {job_id}. "
-                f"Please ensure the NetworkX graph was generated successfully."
+                f"Metadata file not found for job_id: {job_id} "
+                f"(checked networkx_metadata.json and job_metadata.json)"
             )
         
         try:
