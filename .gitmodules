@@ -4,9 +4,6 @@
 [submodule "submodules/custom-atomspace-builder"]
 	path = submodules/custom-atomspace-builder
 	url = https://github.com/rejuve-bio/custom-atomspace-builder.git
-[submodule "submodules/annotation-query-backend"]
-	path = submodules/annotation-query-backend
-	url = https://github.com/rejuve-bio/annotation-query-backend.git
 [submodule "submodules/annotation-tool"]
 	path = submodules/annotation-tool
 	url = https://github.com/rejuve-bio/annotation-tool.git
