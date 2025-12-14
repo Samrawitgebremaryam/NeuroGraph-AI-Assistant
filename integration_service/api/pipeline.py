@@ -118,3 +118,33 @@ async def download_result(job_id: str, filename: str = None):
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/mining-status/{job_id}")
+async def get_mining_status(job_id: str):
+    """Get the current progress of a mining job."""
+    try:
+        # Define path to progress file in shared volume
+        # Note: We access it via the shared volume path
+        progress_path = f"/shared/output/{job_id}/progress.json"
+        
+        if not os.path.exists(progress_path):
+            # If no progress file yet, return pending status
+            return {
+                "status": "pending", 
+                "progress": 0, 
+                "message": "Waiting for miner to start..."
+            }
+            
+        import json
+        with open(progress_path, 'r') as f:
+            status_data = json.load(f)
+            
+        return status_data
+        
+    except Exception as e:
+        # Don't fail the request, just return error status
+        return {
+            "status": "error", 
+            "progress": 0, 
+            "message": f"Error checking status: {str(e)}"
+        }
