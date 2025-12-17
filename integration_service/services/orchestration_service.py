@@ -162,22 +162,22 @@ class OrchestrationService:
                 print(f"NetworkX output directory not found: {nx_dir}")
                 return
 
+            mork_subdir = os.path.join(nx_dir, "mork")
+            os.makedirs(mork_subdir, exist_ok=True)
+
             for filename in os.listdir(mork_dir):
                 src_path = os.path.join(mork_dir, filename)
                 
                 if filename in ["schema.json", "neo4j_load_result.json"]:
                     continue
                 
-                if filename == "job_metadata.json":
-                    dst_path = os.path.join(nx_dir, "job_metadata_mork.json")
-                else:
-                    dst_path = os.path.join(nx_dir, filename)
+                dst_path = os.path.join(mork_subdir, filename)
                 
                 if os.path.isfile(src_path):
                     shutil.copy2(src_path, dst_path)
             
             shutil.rmtree(mork_dir)
-            print(f"Successfully merged Mork files from {mork_job_id} to {nx_job_id}")
+            print(f"Successfully merged Mork files from {mork_job_id} to {mork_subdir}")
             
         except Exception as e:
             print(f"Error merging Mork results: {str(e)}")
