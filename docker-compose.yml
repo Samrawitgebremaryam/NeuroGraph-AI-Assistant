@@ -144,7 +144,7 @@ services:
 
   # --- Annotation Tool (Frontend) ---
   annotation-tool:
-    image: kedist/annotation-tool:latest
+    image: samribahta/annotation-tool:latest
     container_name: annotation-tool
     ports:
       - "${ANNOTATION_TOOL_PORT:-3000}:${ANNOTATION_TOOL_PORT:-3000}"
